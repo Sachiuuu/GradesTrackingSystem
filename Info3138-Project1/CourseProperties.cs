@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Info3138_Project1
 {
-    internal class Evaluation
+    class CourseProperties
+    {
+        //Creating the properties of the Course class
+        public string? CourseCode { get; set; }  //Defines the course,class code (Ex. INFO3138, INFO4123)
+        public List<Evaluation> Evaluations { get; set; } = new();  //A list that will hold all the properties of the activity, evaluation for the Course
+    }
+
+    class Evaluation
     {
         //Creating the properties of the Evaluations for a course, class. (Ex. Assignments, Quizzes, Projects, etc)
         public string? Description { get; set; } //A little description of what the Evaluation is about and which kind of evaluation is

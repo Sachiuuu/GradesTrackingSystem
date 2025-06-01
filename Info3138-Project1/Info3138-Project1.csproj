@@ -9,7 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="course-grade-schema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
     <PackageReference Include="NJsonSchema" Version="11.3.2" />
   </ItemGroup>
 
