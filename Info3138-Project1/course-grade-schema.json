@@ -13,10 +13,28 @@
       "items": {
         "type": "array",
         "properties": {
-          "Description": {            "type": "string"
+          "Description": {
+            "type": "string"
           },
-        }
+          "Weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "OutOf": {
+            "type": "integer",
+            "minimum": 0
+          }
+          "EarnedMarks": {
+            "type": [ "number", "null" ],
+            "minimum": 0
+          }
+        },
+        "required": [ "Description", "Weight", "OutOf", "EarnedMarks" ],
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "required": [ "code" ],
+  "additionalProperties": false
 }
