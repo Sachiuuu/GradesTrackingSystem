@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "tittle": "JSON Schema for my JSON file format",
+
+  "type": "object",
+  "properties": {
+    "Code": {
+      "type": "string",
+      "pattern": "^[A-Z]{4}-\\d{4}$"
+    },
+    "Evaluation": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "properties": {
+          "Description": {            "type": "string"
+          },
+        }
+      }
+    }
+  }
+}
