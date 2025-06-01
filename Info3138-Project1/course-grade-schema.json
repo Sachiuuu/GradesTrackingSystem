@@ -1,17 +1,14 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "tittle": "JSON Schema for my JSON file format",
-
   "type": "object",
   "properties": {
     "Code": {
       "type": "string",
       "pattern": "^[A-Z]{4}-\\d{4}$"
     },
-    "Evaluation": {
+    "Evaluations": {
       "type": "array",
       "items": {
-        "type": "array",
+        "type": "object",
         "properties": {
           "Description": {
             "type": "string"
@@ -24,7 +21,7 @@
           "OutOf": {
             "type": "integer",
             "minimum": 0
-          }
+          },
           "EarnedMarks": {
             "type": [ "number", "null" ],
             "minimum": 0
@@ -35,6 +32,6 @@
       }
     }
   },
-  "required": [ "code" ],
+  "required": [ "Code" ],
   "additionalProperties": false
 }
