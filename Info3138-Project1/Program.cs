@@ -23,125 +23,117 @@ namespace Info3138_Project1
         {
             Console.WriteLine("Grades Tracking System\n");
 
-            // Attempt to read the json schema file into a string variable
+            // Try to load the JSON schema from file
             if (ReadFile("course-grade-schema.json", out string jsonSchema))
             {
-                // Repeatedly prompt user for data file path until user enters nothing
-                bool done = false;
-                do
+                // Set the fixed JSON file name
+                string pathName = "grades.json";
+                List<CourseProperties> courseList;
+
+                // Check if grades.json exists
+                if (File.Exists(pathName))
                 {
-                    // Ask the user to input a json data file path
-                    Console.Write("\nEnter the path name of a JSON team file (or press enter to quit): ");
-                    string pathName = Console.ReadLine() ?? "";
-
-                    if (string.IsNullOrEmpty(pathName))
+                    // If it exists, try to read it
+                    if (ReadFile(pathName, out string jsonData))
                     {
-                        // No JSON? No Party...
-                        Console.WriteLine("\nNothing to do. Shutting down.\n");
-                        done = true;
-                    }
-                    else
-                    {
-                        // Attempt to read the json data file into a string variable
-                        if (ReadFile(pathName, out string jsonData))
+                        // Validate the file against the schema
+                        if (ValidateCourseData(jsonData, jsonSchema, out IList<string> messages))
                         {
-                            // Validate the json data against the schema
-                            if (ValidateCourseData(jsonData, jsonSchema, out IList<string> messages)) // Note: messages parameter is optional
-                            {
-                                Console.WriteLine($"\nData file is valid.");
-
-                                //Reading the json data into a list of CourseProperties objects, if the json data is invalid, it will create an empty list to prevent null reference exceptions
-                                List<CourseProperties> courseList = JsonConvert.DeserializeObject<List<CourseProperties>>(jsonData) ?? new();
-
-                                // Repeatedly prompt user for commands until user enters 'X' to quit
-                                bool innerDone = false;
-                                do
-                                {
-                                    if (courseList.Count == 0)
-                                    {
-                                        // No courses found, prompt to add a new course
-                                        Console.Clear();
-                                        Console.WriteLine("\t\t~ GRADES TRACKING SYSTEM ~\n");
-                                        Console.WriteLine("No courses found.");
-                                        Console.WriteLine("Press A to add a new course.");
-                                        Console.WriteLine("Press X to quit.");
-                                        Console.Write("\nEnter a command: ");
-
-                                        string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
-
-                                        if (input == "A")
-                                        {
-                                            // Add a new course
-                                            AddCourse(courseList, jsonSchema);
-                                        }
-                                        else if (input == "X")
-                                        {
-                                            // Exit the inner loop
-                                            innerDone = true;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Invalid input. Press any key...");
-                                            Console.ReadKey(); 
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // Display the course summary and prompt for commands
-                                        DisplayCourseSummary(courseList);
-
-                                        string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
-
-                                        if (input == "A")
-                                        {
-                                            AddCourse(courseList, jsonSchema);
-                                        }
-                                        else if (input == "X")
-                                        {
-                                            innerDone = true;
-                                        }
-                                        else if (int.TryParse(input, out int selection) && selection >= 1 && selection <= courseList.Count) // Check if input is a valid course number
-                                        {
-                                            ManageCourse(courseList[selection - 1], courseList, jsonSchema);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Invalid input. Press any key...");
-                                            Console.ReadKey();
-                                        }
-                                    }
-                                } while (!innerDone);
-
-
-                                // Save before quitting
-                                File.WriteAllText(pathName, JsonConvert.SerializeObject(courseList, Formatting.Indented));
-                                Console.WriteLine("Data saved. Goodbye.");
-
-                            }
-                            else
-                            {
-                                Console.WriteLine($"\nERROR:\tData file is invalid.\n");
-
-                                // Report validation error messages
-                                foreach (string msg in messages)
-                                    Console.WriteLine($"\t{msg}");
-                            }
+                            // If valid, deserialize it
+                            courseList = JsonConvert.DeserializeObject<List<CourseProperties>>(jsonData) ?? new();
+                            Console.WriteLine("grades.json found and successfully loaded.");
                         }
                         else
                         {
-                            // Read operation for data failed
-                            Console.WriteLine("\nERROR:\tUnable to read the data file. Try another path or press enter to quit.");
+                            // Invalid JSON format
+                            Console.WriteLine("grades.json is invalid:");
+                            foreach (string msg in messages)
+                                Console.WriteLine($" - {msg}");
+                            return;
                         }
                     }
-                } while (!done);
+                    else
+                    {
+                        // Could not read the file
+                        Console.WriteLine("Unable to read grades.json. Exiting...");
+                        return;
+                    }
+                }
+                else
+                {
+                    // File doesn't exist — create a new one with an empty list
+                    Console.WriteLine("grades.json not found. Creating new file...");
+                    courseList = new List<CourseProperties>();
+                    File.WriteAllText(pathName, JsonConvert.SerializeObject(courseList, Formatting.Indented));
+                }
+
+                // Begin program loop
+                bool innerDone = false;
+                do
+                {
+                    if (courseList.Count == 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("\t\t~ GRADES TRACKING SYSTEM ~\n");
+                        Console.WriteLine("No courses found.");
+                        Console.WriteLine("Press A to add a new course.");
+                        Console.WriteLine("Press X to quit.");
+                        Console.Write("\nEnter a command: ");
+
+                        string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
+
+                        if (input == "A")
+                        {
+                            AddCourse(courseList, jsonSchema);
+                        }
+                        else if (input == "X")
+                        {
+                            innerDone = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Press any key...");
+                            Console.ReadKey();
+                        }
+                    }
+                    else
+                    {
+                        DisplayCourseSummary(courseList);
+
+                        string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
+
+                        if (input == "A")
+                        {
+                            AddCourse(courseList, jsonSchema);
+                        }
+                        else if (input == "X")
+                        {
+                            innerDone = true;
+                        }
+                        else if (int.TryParse(input, out int selection) &&
+                                 selection >= 1 && selection <= courseList.Count)
+                        {
+                            ManageCourse(courseList[selection - 1], courseList, jsonSchema);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Press any key...");
+                            Console.ReadKey();
+                        }
+                    }
+                } while (!innerDone);
+
+                // Save the course list before exiting
+                File.WriteAllText(pathName, JsonConvert.SerializeObject(courseList, Formatting.Indented));
+                Console.WriteLine("Data saved. Goodbye.");
             }
             else
             {
-                // Read operation for schema failed
                 Console.WriteLine("ERROR:\tUnable to read the schema file.");
             }
         }
-        
+
+
         // Attempts to read the json file specified by 'path' into the string 'json'
         // Returns 'true' if successful or 'false' if it fails
         private static bool ReadFile(string path, out string json)
