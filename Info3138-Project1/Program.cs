@@ -1,8 +1,10 @@
 ﻿/*
     Name: Daniel Diaz/David Bonilla
     Student Number: 1231950/1207650
-    Description:
-
+    Description: A C# Program that means to read a json file (course.json) that contains a Course and a list of Evaluations, following some rules that a json-schema has.
+    This will create a "Tracking System" that contains the Name/Code of the course and their respective evaluations that have certains grades, weight, etc. The program will be displayed
+    on a user-friendly UI layout that will guide the user through the "Grades Trackin Sytem" program. The program will allow the user to add, remove, and edit the courses and their
+    respectives evaluations, modifying the properties of the evaluations as well.
  */
 
 using System;
@@ -19,7 +21,7 @@ namespace Info3138_Project1
     {
         static void Main()
         {
-            Console.WriteLine("Grades Tracking System\n--------------------------");
+            Console.WriteLine("Grades Tracking System\n");
 
             // Attempt to read the json schema file into a string variable
             if (ReadFile("course-grade-schema.json", out string jsonSchema))
@@ -157,7 +159,7 @@ namespace Info3138_Project1
             }
         } // end ReadFile()
 
-        // Reports the information contained in the parameter 'json' in the console window
+        // Displays the main menu following by the
         private static void DisplayCourseSummary(List<CourseProperties> courseList)
         {
             Console.Clear();
